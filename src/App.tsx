@@ -1,11 +1,5 @@
-//import React from 'react';
+import AppRouter from './router/AppRouter';
 
-const App = () => {
-  return (
-    <div>
-      This is Ecommerce admin panel page 
-    </div>
-  )
-}
+const App = () => <AppRouter />;
 
-export default App
+export default App;
