@@ -1,21 +1,34 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import PrivateRoute from './PrivateRouter';
-import PublicRoute from './PublicRoute';
-import Login from '../pages/login';
-import Dashboard from '../pages/Dashboard';
-import NotFound from '../pages/NotFound';
+import { Navigate, Route, Routes } from "react-router-dom";
+import PrivateRoute from "./PrivateRouter";
+import PublicRoute from "./PublicRoute";
+import MainLayout from "../layouts/MainLayout";
+import Login from "../pages/login";
+import Dashboard from "../pages/Dashboard";
+import Profile from "../pages/Profile";
+import AttributeList from "../pages/catalog/AttributeList";
+import NotFound from "../pages/NotFound";
+import AttributeSetList from "../pages/catalog/AttributeSetList";
 
 const AppRouter = () => {
   return (
     <Routes>
-      {/* Only users WITHOUT a token */}
+      {/* Only logged-out users */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
       </Route>
 
-      {/* Only users WITH a token */}
+      {/* Only logged-in users, all inside the header + sidebar layout */}
       <Route element={<PrivateRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/catalog"
+            element={<Navigate to="/catalog/attribute" replace />}
+          />
+          <Route path="/catalog/attribute" element={<AttributeList />} />
+          <Route path="/catalog/attribute-set" element={<AttributeSetList />} />
+        </Route>
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -1,19 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { Heading } from 'theme-ui';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login', { replace: true });
-  };
-
-  return (
-    <div style={{ padding: 24 }}>
-      <h1>Dashboard</h1>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
-  );
+  return <Heading as="h1" sx={{ fontSize: 3 }}>Dashboard</Heading>;
 };
 
 export default Dashboard;
