@@ -1,5 +1,5 @@
-import axios, { isAxiosError } from 'axios';
-import { StatusCodes } from 'http-status-codes';
+import axios, { isAxiosError } from "axios";
+import { StatusCodes } from "http-status-codes";
 
 // ---------- Axios setup ----------
 const api = axios.create({
@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Attach the token to every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -19,11 +19,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // ---------- Types ----------
@@ -42,10 +42,10 @@ export interface AttributeList {
 // ---------- Endpoints ----------
 export const attributePageSize = 10;
 
-const listUrl = '/attribute/list-Of-attributes'; // copy the exact spelling from Swagger
-const addUrl = '/attribute/add-attribute';
-const updateUrl = '/attribute/update-attribute';
-const deleteUrl = '/attribute/delete-attribute'; // CONFIRM in Swagger. The id is added at the end.
+const listUrl = "/attribute/list-Of-attributes"; // copy the exact spelling from Swagger
+const addUrl = "/attribute/add-attribute";
+const updateUrl = "/attribute/update-attribute";
+const deleteUrl = "/attribute/delete-attribute"; // CONFIRM in Swagger. The id is added at the end.
 
 // ---------- Reading the backend response ----------
 interface RawAttribute {
@@ -57,13 +57,20 @@ interface RawAttribute {
 }
 
 interface RawListResponse {
-  data?: RawAttribute[] | { rows?: RawAttribute[]; items?: RawAttribute[]; total?: number; count?: number };
+  data?:
+    | RawAttribute[]
+    | {
+        rows?: RawAttribute[];
+        items?: RawAttribute[];
+        total?: number;
+        count?: number;
+      };
   total?: number;
   count?: number;
 }
 
 const mapAttribute = (raw: RawAttribute): Attribute => ({
-  id: String(raw._id ?? raw.id ?? ''),
+  id: String(raw._id ?? raw.id ?? ""),
   name: raw.name,
   createdAt: raw.createdAt,
   updatedAt: raw.updatedAt,
@@ -71,15 +78,17 @@ const mapAttribute = (raw: RawAttribute): Attribute => ({
 
 // ---------- Error message for the user ----------
 export const getApiErrorMessage = (error: unknown): string => {
-  if (!isAxiosError(error)) return 'Something went wrong. Please try again.';
+  if (!isAxiosError(error)) return "Something went wrong. Please try again.";
 
-  if (!error.response) return 'Cannot reach the server. Check your internet and try again.';
+  if (!error.response)
+    return "Cannot reach the server. Check your internet and try again.";
 
   const { status, data } = error.response;
 
-  if (status >= StatusCodes.INTERNAL_SERVER_ERROR) return 'Server error. Please try again later.';
+  if (status >= StatusCodes.INTERNAL_SERVER_ERROR)
+    return "Server error. Please try again later.";
 
-  return String(data?.message || 'Something went wrong. Please try again.');
+  return String(data?.message || "Something went wrong. Please try again.");
 };
 
 // ---------- API calls ----------
@@ -90,8 +99,15 @@ export const getAttributes = (page: number) => {
       const body = response.data;
       const payload = body.data;
       const meta = Array.isArray(payload) ? undefined : payload;
-      const rawItems = Array.isArray(payload) ? payload : meta?.rows ?? meta?.items ?? [];
-      const total = meta?.total ?? meta?.count ?? body.total ?? body.count ?? rawItems.length;
+      const rawItems = Array.isArray(payload)
+        ? payload
+        : (meta?.rows ?? meta?.items ?? []);
+      const total =
+        meta?.total ??
+        meta?.count ??
+        body.total ??
+        body.count ??
+        rawItems.length;
 
       return { items: rawItems.map(mapAttribute), total };
     });

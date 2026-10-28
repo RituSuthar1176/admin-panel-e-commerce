@@ -26,6 +26,14 @@ const cellSx = {
   borderColor: "border",
 } as const;
 
+// Keeps the Actions column pinned to the right edge, so Edit and Delete are always visible
+const stickyActionsSx = {
+  position: "sticky",
+  right: 0,
+  zIndex: 1,
+  boxShadow: "-4px 0 6px -4px rgba(0,0,0,0.15)",
+} as const;
+
 const editButtonStyle = {
   padding: "5px 12px",
   fontSize: 13,
@@ -221,7 +229,7 @@ const AttributeList = () => {
         {isLoading ? (
           <PageLoader />
         ) : (
-          <Box sx={{ overflowX: "auto" }}>
+          <Box sx={{ overflowX: "auto", width: 0, minWidth: "100%" }}>
             <Box
               as="table"
               sx={{
@@ -241,6 +249,9 @@ const AttributeList = () => {
                         ...cellSx,
                         py: "12px",
                         fontWeight: 600,
+                        ...(column === "Actions"
+                          ? { ...stickyActionsSx, bg: "tableHead" }
+                          : {}),
                       }}
                     >
                       {column}
@@ -288,6 +299,8 @@ const AttributeList = () => {
                         as="td"
                         sx={{
                           ...cellSx,
+                          ...stickyActionsSx,
+                          bg: "white",
                           minWidth: "150px",
                           whiteSpace: "nowrap",
                         }}

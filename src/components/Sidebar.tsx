@@ -25,6 +25,7 @@ const menuItems: MenuItem[] = [
     children: [
       { label: "Attribute", path: "/catalog/attribute" },
       { label: "Attribute Set", path: "/catalog/attribute-set" },
+      { label: "Collection", path: "/catalog/collection" },
     ],
   },
 ];
@@ -37,11 +38,15 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const { pathname } = useLocation();
 
+  // A group is "active" while the current page is inside it (this also covers pages like /catalog/collection/5)
+  const isChildActive = (path: string) =>
+    pathname === path || pathname.startsWith(`${path}/`);
+
   // The group that contains the current page starts open
   const [openGroup, setOpenGroup] = useState<string | null>(
     () =>
       menuItems.find((item) =>
-        item.children?.some((child) => child.path === pathname),
+        item.children?.some((child) => isChildActive(child.path)),
       )?.label ?? null,
   );
 
@@ -108,6 +113,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           {menuItems.map((item) => {
             // Single link (Dashboard)
             if (item.path) {
+              const isActive = pathname === item.path;
+
               return (
                 <Link
                   key={item.label}
@@ -124,8 +131,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                       mb: 1,
                       borderRadius: 10,
                       fontWeight: 500,
-                      color: pathname === item.path ? "primary" : "text",
-                      bg: pathname === item.path ? "activeBg" : "transparent",
+                      color: isActive ? "primary" : "text",
+                      bg: isActive ? "activeBg" : "transparent",
                     }}
                   >
                     {item.icon}
@@ -138,7 +145,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             // Expandable group (Catalog)
             const isGroupOpen = openGroup === item.label;
             const isGroupActive = Boolean(
-              item.children?.some((child) => child.path === pathname),
+              item.children?.some((child) => isChildActive(child.path)),
             );
 
             return (
@@ -172,7 +179,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     }}
                   >
                     {item.children?.map((child) => {
-                      const isChildActive = pathname === child.path;
+                      const isChildSelected = isChildActive(child.path);
 
                       return (
                         <Link
@@ -188,7 +195,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                               pl: "24px",
                               py: 2,
                               fontWeight: 500,
-                              color: isChildActive ? "primary" : "text",
+                              color: isChildSelected ? "primary" : "text",
                               "&:hover": { color: "primary" },
                             }}
                           >
@@ -202,7 +209,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                 width: 8,
                                 height: 8,
                                 borderRadius: "50%",
-                                bg: isChildActive ? "#d9a99b" : "text",
+                                bg: isChildSelected ? "#d9a99b" : "text",
                               }}
                             />
                             {child.label}
