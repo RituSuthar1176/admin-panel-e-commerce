@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Alert, Flex, Text } from "theme-ui";
 import { FiTrash2, FiX } from "react-icons/fi";
 import BaseModal from "./BaseModal";
@@ -5,8 +6,10 @@ import BaseButton from "./BaseButton";
 
 interface BaseConfirmModalProps {
   title: string;
-  message: string;
+  message: ReactNode; // plain text, or text with bold parts
   confirmText?: string;
+  confirmIcon?: ReactNode;
+  confirmVariant?: "primary" | "danger";
   isLoading?: boolean;
   errorMessage?: string;
   onConfirm: () => void;
@@ -17,6 +20,8 @@ const BaseConfirmModal = ({
   title,
   message,
   confirmText = "Delete",
+  confirmIcon = <FiTrash2 size={16} />,
+  confirmVariant = "danger",
   isLoading = false,
   errorMessage = "",
   onConfirm,
@@ -42,9 +47,9 @@ const BaseConfirmModal = ({
         <BaseButton
           text={confirmText}
           type="button"
-          variant="danger"
+          variant={confirmVariant}
           fullWidth={false}
-          icon={<FiTrash2 size={16} />}
+          icon={confirmIcon}
           isLoading={isLoading}
           onClick={onConfirm}
         />

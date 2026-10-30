@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { Alert, Box, Flex, Heading, IconButton, Text } from "theme-ui";
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import Breadcrumb from "../../components/Breadcrumb";
 import BaseButton from "../../components/base/BaseButton";
+import BaseConfirmModal from "../../components/base/BaseConfirmModal";
 import BasePagination from "../../components/base/BasePagination";
 import PageLoader from "../../components/loaders/PageLoader";
 import AttributeFormModal from "../../components/catalog/AttributeFormModal";
 import {
   attributePageSize,
+  deleteAttribute,
   getApiErrorMessage,
   getAttributes,
 } from "../../api/attributeApi";
@@ -40,6 +42,13 @@ const AttributeList = () => {
   const [selectedAttribute, setSelectedAttribute] = useState<Attribute | null>(
     null,
   );
+
+  // Delete state
+  const [attributeToDelete, setAttributeToDelete] = useState<Attribute | null>(
+    null,
+  );
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchAttributes = useCallback((pageNumber: number) => {
     setIsLoading(true);
@@ -100,6 +109,47 @@ const AttributeList = () => {
     } else {
       fetchAttributes(page);
     }
+  };
+
+  const openDeleteModal = (attribute: Attribute) => {
+    setDeleteError("");
+    setAttributeToDelete(attribute);
+  };
+
+  const closeDeleteModal = () => {
+    // Don't allow closing while the request is running
+    if (isDeleting) return;
+    setAttributeToDelete(null);
+    setDeleteError("");
+  };
+
+  const handleDelete = () => {
+    if (!attributeToDelete) return;
+
+    setIsDeleting(true);
+    setDeleteError("");
+
+    deleteAttribute(attributeToDelete.id)
+      .then(() => {
+        const deletedName = attributeToDelete.name;
+        // If this was the only item on a later page, go back one page
+        const shouldGoBack = attributes.length === 1 && page > 1;
+
+        setAttributeToDelete(null);
+        setSuccessMessage(`Attribute "${deletedName}" deleted successfully.`);
+
+        if (shouldGoBack) {
+          setPage(page - 1);
+        } else {
+          fetchAttributes(page);
+        }
+      })
+      .catch((error) => {
+        setDeleteError(getApiErrorMessage(error));
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
   const totalPages = Math.max(1, Math.ceil(total / attributePageSize));
@@ -203,12 +253,20 @@ const AttributeList = () => {
                         {formatDate(attribute.updatedAt)}
                       </Box>
                       <Box as="td" sx={cellSx}>
-                        <IconButton
-                          aria-label={`Edit ${attribute.name}`}
-                          onClick={() => openEditModal(attribute)}
-                        >
-                          <FiEdit2 size={16} />
-                        </IconButton>
+                        <Flex sx={{ gap: 2 }}>
+                          <IconButton
+                            aria-label={`Edit ${attribute.name}`}
+                            onClick={() => openEditModal(attribute)}
+                          >
+                            <FiEdit2 size={16} />
+                          </IconButton>
+                          <IconButton
+                            aria-label={`Delete ${attribute.name}`}
+                            onClick={() => openDeleteModal(attribute)}
+                          >
+                            <FiTrash2 size={16} />
+                          </IconButton>
+                        </Flex>
                       </Box>
                     </tr>
                   ))
@@ -243,6 +301,23 @@ const AttributeList = () => {
           attribute={selectedAttribute}
           onClose={closeModal}
           onSuccess={handleSuccess}
+        />
+      )}
+
+      {attributeToDelete && (
+        <BaseConfirmModal
+          title="Delete Attribute"
+          message={
+            <>
+              Are you sure you want to delete{" "}
+              <strong>{attributeToDelete.name}</strong>? This action cannot be
+              undone.
+            </>
+          }
+          isLoading={isDeleting}
+          errorMessage={deleteError}
+          onConfirm={handleDelete}
+          onCancel={closeDeleteModal}
         />
       )}
     </Box>

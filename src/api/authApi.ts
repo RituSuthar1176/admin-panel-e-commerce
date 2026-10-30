@@ -6,7 +6,7 @@ const api = axios.create({
   timeout: 60000, // Render free servers can take up to a minute to wake up
 });
 
-// ---------- Types ----------
+// ---------- Types ---------- 
 export interface LoginPayload {
   email: string;
   password: string;

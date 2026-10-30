@@ -2,7 +2,14 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Box, Button, Flex, IconButton, Text } from "theme-ui";
-import { FiChevronLeft, FiHome, FiList, FiMinus, FiPlus } from "react-icons/fi";
+import {
+  FiBox,
+  FiChevronLeft,
+  FiHome,
+  FiList,
+  FiMinus,
+  FiPlus,
+} from "react-icons/fi";
 
 interface MenuChild {
   label: string;
@@ -28,6 +35,7 @@ const menuItems: MenuItem[] = [
       { label: "Collection", path: "/catalog/collection" },
     ],
   },
+  { label: "Product", path: "/product", icon: <FiBox size={18} /> },
 ];
 
 interface SidebarProps {
@@ -38,15 +46,15 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const { pathname } = useLocation();
 
-  // A group is "active" while the current page is inside it (this also covers pages like /catalog/collection/5)
-  const isChildActive = (path: string) =>
+  // An item is "active" while the current page is inside it (this also covers pages like /product/add)
+  const isPathActive = (path: string) =>
     pathname === path || pathname.startsWith(`${path}/`);
 
   // The group that contains the current page starts open
   const [openGroup, setOpenGroup] = useState<string | null>(
     () =>
       menuItems.find((item) =>
-        item.children?.some((child) => isChildActive(child.path)),
+        item.children?.some((child) => isPathActive(child.path)),
       )?.label ?? null,
   );
 
@@ -111,9 +119,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
         <Box as="nav" sx={{ p: 3 }}>
           {menuItems.map((item) => {
-            // Single link (Dashboard)
+            // Single link (Dashboard, Product)
             if (item.path) {
-              const isActive = pathname === item.path;
+              const isActive = isPathActive(item.path);
 
               return (
                 <Link
@@ -145,7 +153,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             // Expandable group (Catalog)
             const isGroupOpen = openGroup === item.label;
             const isGroupActive = Boolean(
-              item.children?.some((child) => isChildActive(child.path)),
+              item.children?.some((child) => isPathActive(child.path)),
             );
 
             return (
@@ -179,7 +187,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     }}
                   >
                     {item.children?.map((child) => {
-                      const isChildSelected = isChildActive(child.path);
+                      const isChildSelected = isPathActive(child.path);
 
                       return (
                         <Link

@@ -6,10 +6,11 @@ import { FiX } from 'react-icons/fi';
 interface BaseModalProps {
   title: string;
   onClose: () => void;
+  maxWidth?: number;
   children: ReactNode;
 }
 
-const BaseModal = ({ title, onClose, children }: BaseModalProps) => {
+const BaseModal = ({ title, onClose, maxWidth = 440, children }: BaseModalProps) => {
   // Close with the Escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,7 +27,7 @@ const BaseModal = ({ title, onClose, children }: BaseModalProps) => {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        sx={{ width: '100%', maxWidth: 440, maxHeight: '90vh', overflowY: 'auto', p: 4, bg: 'background', borderRadius: 16, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}
+        sx={{ width: '100%', maxWidth, maxHeight: '90vh', overflowY: 'auto', p: 4, bg: 'background', borderRadius: 16, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}
       >
         <Flex sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
           <Heading as="h2" sx={{ fontSize: 3 }}>{title}</Heading>

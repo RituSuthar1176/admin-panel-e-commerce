@@ -1,15 +1,19 @@
 import type { InputHTMLAttributes, ReactNode } from "react";
-import { Box, Input, Label, Text } from "theme-ui";
+import { Box, Flex, Input, Label, Text } from "theme-ui";
 
 interface BaseInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  hint?: string; // for example a character counter such as "0/160"
+  isRequired?: boolean;
   rightElement?: ReactNode; // for the eye icon
 }
 
 const BaseInput = ({
   label,
   error,
+  hint,
+  isRequired = true,
   rightElement,
   id,
   ...inputProps
@@ -17,7 +21,7 @@ const BaseInput = ({
   return (
     <Box mb={2}>
       <Label htmlFor={id}>
-        {label} <Text sx={{ color: "error", ml: 1 }}>*</Text>
+        {label} {isRequired && <Text sx={{ color: "error", ml: 1 }}>*</Text>}
       </Label>
 
       <Box sx={{ position: "relative" }}>
@@ -43,17 +47,20 @@ const BaseInput = ({
         )}
       </Box>
 
-      <Text
+      <Flex
         sx={{
-          display: "block",
+          justifyContent: "space-between",
+          gap: 2,
           minHeight: 20,
           mt: 1,
           fontSize: 1,
-          color: "error",
         }}
       >
-        {error}
-      </Text>
+        <Text sx={{ color: "error" }}>{error}</Text>
+        {hint && (
+          <Text sx={{ ml: "auto", flexShrink: 0, color: "muted" }}>{hint}</Text>
+        )}
+      </Flex>
     </Box>
   );
 };

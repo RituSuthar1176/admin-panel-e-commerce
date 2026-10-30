@@ -20,6 +20,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      "/api": {
+        target: "https://mvp-ecommerce-admin-be-04sm.onrender.com",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
     },
   },
 });

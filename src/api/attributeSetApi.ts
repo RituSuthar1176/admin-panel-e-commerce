@@ -29,7 +29,8 @@ api.interceptors.response.use(
 // ---------- Endpoints ----------
 const listUrl = "/attribute/list-of-attribute-set";
 const addUrl = "/attribute/add-attribute-set";
-const updateUrl = "/attribute/update-attribute-set"; // CONFIRM in Swagger. It was "/attribute/update-attribute", the Attribute update path.
+const updateUrl = "/attribute/update-attribute-set";
+const deleteUrl = "/attribute/delete-attribute-set"; 
 const attributeOptionsUrl = "/attribute/list-Of-attributes";
 
 export const attributeSetPageSize = 10;
@@ -165,10 +166,17 @@ export const getAttributeOptions = () => {
     });
 };
 
+//for Add atrributeset
 export const createAttributeSet = (payload: AttributeSetPayload) => {
   return api.post(addUrl, toRequestBody(payload));
 };
 
+//for update
 export const updateAttributeSet = (id: string, payload: AttributeSetPayload) => {
   return api.put(`${updateUrl}/${id}`, toRequestBody(payload));
+};
+
+// For delete
+export const deleteAttributeSet = (id: string) => {
+  return api.delete(`${deleteUrl}/${encodeURIComponent(id)}`);
 };
