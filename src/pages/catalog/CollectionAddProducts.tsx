@@ -40,29 +40,32 @@ const CollectionAddProducts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // The ticked products are kept while the user moves between pages
+  // Keep selected products while moving between pages
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const fetchProducts = useCallback((pageNumber: number) => {
-    setIsLoading(true);
-    setErrorMessage("");
+  const fetchProducts = useCallback(
+    (pageNumber: number) => {
+      setIsLoading(true);
+      setErrorMessage("");
 
-    getProducts(pageNumber)
-      .then((result) => {
-        setProducts(result.items);
-        setTotal(result.total);
-      })
-      .catch((error) => {
-        setErrorMessage(getApiErrorMessage(error));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+      getProducts(id, pageNumber)
+        .then((result) => {
+          setProducts(result.items);
+          setTotal(result.total);
+        })
+        .catch((error) => {
+          setErrorMessage(getApiErrorMessage(error));
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+    [id],
+  );
 
-  // Load the products on the first visit and whenever the page changes
+  // Load products when the page changes
   useEffect(() => {
     fetchProducts(page);
   }, [page, fetchProducts]);
@@ -73,17 +76,22 @@ const CollectionAddProducts = () => {
 
   const toggleProduct = (productId: string, checked: boolean) => {
     setSubmitError("");
+
     setSelectedIds((current) => {
-      if (!checked) return current.filter((item) => item !== productId);
+      if (!checked) {
+        return current.filter((item) => item !== productId);
+      }
+
       return current.includes(productId) ? current : [...current, productId];
     });
   };
 
-  // The checkbox in the table header ticks or unticks every product on this page
+  // Select or unselect all products on the current page
   const togglePage = (checked: boolean) => {
     const pageIds = products.map((product) => product.id);
 
     setSubmitError("");
+
     setSelectedIds((current) =>
       checked
         ? [...new Set([...current, ...pageIds])]
@@ -103,7 +111,9 @@ const CollectionAddProducts = () => {
     addProductsToCollection(id, selectedIds)
       .then(() => {
         navigate(collectionListPath, {
-          state: { successMessage: "Collection added successfully." },
+          state: {
+            successMessage: "Collection added successfully.",
+          },
         });
       })
       .catch((error) => {
@@ -132,6 +142,7 @@ const CollectionAddProducts = () => {
         <Heading as="h1" sx={{ fontSize: 3 }}>
           Collection Products
         </Heading>
+
         <Breadcrumb
           items={[
             { label: "Dashboard", path: "/dashboard" },
@@ -155,11 +166,14 @@ const CollectionAddProducts = () => {
         {isLoading ? (
           <PageLoader />
         ) : (
-          // The table scrolls sideways on small screens
           <Box sx={{ overflowX: "auto" }}>
             <Box
               as="table"
-              sx={{ width: "100%", minWidth: 640, borderCollapse: "collapse" }}
+              sx={{
+                width: "100%",
+                minWidth: 640,
+                borderCollapse: "collapse",
+              }}
             >
               <thead>
                 <Box as="tr" sx={{ bg: "tableHead" }}>
@@ -170,17 +184,23 @@ const CollectionAddProducts = () => {
                       onChange={togglePage}
                     />
                   </Box>
+
                   {tableColumns.map((column) => (
                     <Box
                       as="th"
                       key={column}
-                      sx={{ ...cellSx, py: "12px", fontWeight: 600 }}
+                      sx={{
+                        ...cellSx,
+                        py: "12px",
+                        fontWeight: 600,
+                      }}
                     >
                       {column}
                     </Box>
                   ))}
                 </Box>
               </thead>
+
               <tbody>
                 {products.length === 0 ? (
                   <tr>
@@ -209,18 +229,23 @@ const CollectionAddProducts = () => {
                           }
                         />
                       </Box>
+
                       <Box as="td" sx={cellSx}>
                         {(page - 1) * productPageSize + index + 1}
                       </Box>
+
                       <Box as="td" sx={cellSx}>
                         {product.name}
                       </Box>
+
                       <Box as="td" sx={cellSx}>
                         {product.attributeSet || "-"}
                       </Box>
+
                       <Box as="td" sx={cellSx}>
                         {product.vendor || "-"}
                       </Box>
+
                       <Box as="td" sx={cellSx}>
                         <StatusBadge isActive={product.status === "active"} />
                       </Box>
@@ -246,6 +271,7 @@ const CollectionAddProducts = () => {
           Showing {firstEntry} to {lastEntry} of {total} entries
           {selectedIds.length > 0 && ` (${selectedIds.length} selected)`}
         </Text>
+
         <BasePagination
           currentPage={page}
           totalPages={totalPages}
@@ -254,7 +280,6 @@ const CollectionAddProducts = () => {
       </Flex>
 
       <Flex sx={{ justifyContent: "flex-end", gap: 3, mt: 3 }}>
-        {/* The collection was already created in the previous step, so the user can leave without products */}
         <BaseButton
           text="Skip"
           type="button"
@@ -262,10 +287,13 @@ const CollectionAddProducts = () => {
           fullWidth={false}
           onClick={() =>
             navigate(collectionListPath, {
-              state: { successMessage: "Collection added successfully." },
+              state: {
+                successMessage: "Collection added successfully.",
+              },
             })
           }
         />
+
         <BaseButton
           text="Add"
           type="button"
