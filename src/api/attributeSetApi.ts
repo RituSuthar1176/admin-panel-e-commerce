@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import { StatusCodes } from "http-status-codes";
 
-// ---------- Axios setup ----------
+// ---------- Axios setup ----------   
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 60000,
@@ -180,3 +180,4 @@ export const updateAttributeSet = (id: string, payload: AttributeSetPayload) => 
 export const deleteAttributeSet = (id: string) => {
   return api.delete(`${deleteUrl}/${encodeURIComponent(id)}`);
 };
+

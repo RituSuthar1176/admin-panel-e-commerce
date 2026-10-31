@@ -240,12 +240,12 @@ const ProductAdd = () => {
     display: "grid",
     gridTemplateColumns: ["1fr", null, "repeat(3, 1fr)"],
     columnGap: 4,
-  } as const;
+  };
   const twoColumnSx = {
     display: "grid",
     gridTemplateColumns: ["1fr", null, "1fr 1fr"],
     columnGap: 4,
-  } as const;
+  };
 
   return (
     <Box>

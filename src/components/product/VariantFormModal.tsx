@@ -40,7 +40,7 @@ const gridSx = {
   display: "grid",
   gridTemplateColumns: ["1fr", "1fr 1fr"],
   columnGap: 3,
-} as const;
+};
 
 const VariantFormModal = ({
   attributes,
