@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // ---------- Axios setup ----------
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: "/api",
   timeout: 60000, // Render free servers can take up to a minute to wake up
 });
 

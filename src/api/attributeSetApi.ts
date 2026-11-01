@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 
 // ---------- Axios setup ----------   
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: "/api",
   timeout: 60000,
 });
 
